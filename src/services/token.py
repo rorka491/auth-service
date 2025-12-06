@@ -1,5 +1,5 @@
 from typing import Optional
-from jwt import decode, encode, InvalidTokenError
+from jose import jwt, JWTError
 from datetime import timedelta, datetime
 from src.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_LIFETIME_MINUTES, REFRESH_TOKEN_LIFETIME_DAYS
 from src.exceptions.auth import InvalidTokenException
@@ -15,7 +15,7 @@ def create_access_token(user_id: int, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=int(ACCESS_TOKEN_LIFETIME_MINUTES)))
     to_encode.update({"exp": expire})
-    encoded_jwt = encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(user_id: int, expires_delta: timedelta = None) -> str:
@@ -24,14 +24,14 @@ def create_refresh_token(user_id: int, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(days=REFRESH_TOKEN_LIFETIME_DAYS))
     to_encode.update({"exp": expire})
-    encoded_jwt = encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def verify_token(token: str) -> Optional[dict]:
     try:
-        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except InvalidTokenError:
+    except JWTError:
         return None
     
 def verify_access_token(token: str)  -> Optional[dict]:
