@@ -23,3 +23,8 @@ async def client():
             yield ac
 
     await Tortoise.close_connections()
+
+
+
+
+    

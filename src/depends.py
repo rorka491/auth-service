@@ -1,4 +1,4 @@
-import jwt
+from jwt import decode
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends
 from src.services.user import UserService
@@ -18,7 +18,7 @@ auth_scheme = HTTPBearer()
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     token = credentials.credentials
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except Exception:
         raise InvalidTokenException
     

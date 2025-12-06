@@ -8,8 +8,6 @@ async def test_auth_flow(client: AsyncClient):
     password = "Password123!"
 
     response = await client.post('/auth/register', json={"username": username, "password": password})
-    data = response.json()
-    print(response.json()) 
     assert response.status_code == 200
 
     response = await client.post("/auth/login", json={"username": username, "password": password})

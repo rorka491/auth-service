@@ -42,8 +42,8 @@ async def refresh(
 
 @router.post('/logout')
 async def logout(
-    refresh_token: str = Body(...),
+    data: RefreshTokenRequest,
     auth_service: AuthService = Depends(get_auth_service)
 ):
-    await auth_service.logout(refresh_token)
+    await auth_service.logout(data.refresh_token)
     return {"detail": "Logged out successfully"}
