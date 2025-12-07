@@ -7,7 +7,7 @@ from src.services.auth import AuthService
 from src.core.logger import logger
 
 
-router = APIRouter(prefix='/auth')
+router = APIRouter(prefix='/auth', tags=["Auth"])
 
 
 @router.post('/register', response_model=UserRead)

@@ -3,13 +3,12 @@ services:
     build: .
     container_name: auth_service
     restart: always
-    env_file:
-      - .env.docker
-    ports:
+    env_file: .env
+    ports: 
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgresql://postgres:postgres@db:5432/authdb"
-      REDIS_URL: "redis://redis:6379/0"
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@${HOST_ADRESS}:5432/${DB_NAME}"
+      REDIS_URL: "redis://${REDIS_HOST_ADRESS}:${REDIS_PORT}/${REDIS_DB}"
       AUTH_URL: "http://auth-service:8000"
     depends_on:
       - db
@@ -18,21 +17,17 @@ services:
       - app-network
   db:
     image: postgres:16
+    env_file: .env
     environment:
-      POSTGRES_DB: authdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
       - app-network
-
   redis:
     image: redis:7
-    ports:
-      - "6379:6379"
     networks:
       - app-network
 

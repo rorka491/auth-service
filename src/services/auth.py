@@ -12,7 +12,7 @@ class AuthService:
         self.hasher = hasher
         self.repo = UserRepository()
 
-    async def authenticate_user(self, data: UserLogin) -> str:
+    async def authenticate_user(self, data: UserLogin) -> tuple[str, str]:
         user = await self.repo.get_user_by_username(username=data.username)
         if not user:
             raise InvalidUserCredentials
@@ -20,17 +20,17 @@ class AuthService:
         if not self.hasher.verify(data.password, user.password):
             raise InvalidUserCredentials
 
-        access_token = create_access_token(user_id=user.id)
-        refresh_token = create_refresh_token(user_id=user.id)
+        access_token = create_access_token(user_id=user.id, org_id=user.org_id)
+        refresh_token = create_refresh_token(user_id=user.id, org_id=user.org_id)
         return access_token, refresh_token
-    
+
     async def get_new_access_token(self, refresh_token: str) -> str | None :
         payload = verify_refresh_token(refresh_token)
         await self.get_jti_or_exception(payload)
         user = await self.get_user_or_exception(payload)
-        access_token = create_access_token(user_id=user.id)
+        access_token = create_access_token(user_id=user.id, org_id=user.org_id)
         return access_token 
-    
+
     async def get_user_data(self, access_token: str) -> User: 
         payload = verify_refresh_token(access_token)
         return await self.get_user_or_exception(payload)
@@ -56,7 +56,7 @@ class AuthService:
             payload = verify_refresh_token(refresh_token)
         except Exception:
             raise InvalidTokenException
-        
+
         jti = payload.get("jti")
         exp = payload.get("exp")
 
@@ -64,7 +64,3 @@ class AuthService:
             raise InvalidTokenException
 
         await blacklist_token(jti, exp)
-
-
-
-

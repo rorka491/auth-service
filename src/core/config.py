@@ -1,10 +1,7 @@
-from passlib.context import CryptContext
 from dotenv import load_dotenv
 import os
 from passlib.hash import argon2
 from redis.asyncio import Redis
-
-redis_client = Redis(host="localhost", port=6379, db=0)
 
 
 hasher = argon2.using(
@@ -25,4 +22,9 @@ DB_TYPE = os.getenv('DB_TYPE')
 ALGORITHM = os.getenv('ALGORITHM')
 ACCESS_TOKEN_LIFETIME_MINUTES = int(os.getenv('ACCESS_TOKEN_LIFETIME_MINUTES'))
 REFRESH_TOKEN_LIFETIME_DAYS = int(os.getenv('REFRESH_TOKEN_LIFETIME_DAYS'))
+REDIS_HOST_ADRESS = os.getenv("REDIS_HOST_ADRESS")
+REDIS_PORT = int(os.getenv("REDIS_PORT"))
+REDIS_DB = int(os.getenv("REDIS_DB"))
 
+
+redis_client = Redis(host=REDIS_HOST_ADRESS, port=REDIS_PORT, db=REDIS_DB)
