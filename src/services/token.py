@@ -2,7 +2,7 @@ from os import access
 from typing import Optional
 from jose import jwt, JWTError
 from datetime import timedelta, datetime, UTC
-from src.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_LIFETIME_MINUTES, REFRESH_TOKEN_LIFETIME_DAYS
+from src.core.config import PRIVATE_KEY, PUBLIC_KEY, ALGORITHM, ACCESS_TOKEN_LIFETIME_MINUTES, PUBLIC_KEY, REFRESH_TOKEN_LIFETIME_DAYS
 from src.exceptions.auth import InvalidTokenException
 from src.core.logger import logger
 from src.core.config import redis_client
@@ -27,7 +27,7 @@ def create_token(
         "org_id": org_id
     }
 
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM) # pyright: ignore[reportArgumentType]
+    return jwt.encode(payload, PRIVATE_KEY, algorithm=ALGORITHM) # pyright: ignore[reportArgumentType]
 
 def create_access_token(user_id: int, org_id, expires_delta: timedelta = None) -> str:
     access_token = create_token(
@@ -44,7 +44,7 @@ def create_refresh_token(user_id: int, org_id, expires_delta: timedelta = None) 
 def verify_token(token: str) -> Optional[dict]:
     try:
         payload = jwt.decode(
-            token, SECRET_KEY, algorithms=[ALGORITHM] # pyright: ignore[reportArgumentType]
+            token, PUBLIC_KEY, algorithms=[ALGORITHM] # pyright: ignore[reportArgumentType]
         )
         return payload
     except JWTError:

@@ -7,7 +7,7 @@ from src.services.user import UserService
 from src.services.auth import AuthService
 from src.exceptions.auth import InvalidTokenException
 from src.exceptions.admin import AdminsOnlyException
-from src.core.config import SECRET_KEY, ALGORITHM
+from src.core.config import PRIVATE_KEY, ALGORITHM
 from src.services.token import verify_access_token
 
 def get_user_service():
