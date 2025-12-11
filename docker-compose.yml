@@ -10,6 +10,8 @@ services:
       DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}"
       REDIS_URL: "redis://${REDIS_HOST_ADRESS}:${REDIS_PORT}/${REDIS_DB}"
       AUTH_URL: "http://auth-service:8000"
+      PUBLIC_KEY_PATH: /app/keys/public.pem
+      PRIVATE_KEY_PATH: /app/keys/private.pem
     depends_on:
       - db
       - redis

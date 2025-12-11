@@ -1,3 +1,4 @@
+import uuid
 from os import access
 from typing import Optional
 from jose import jwt, JWTError
@@ -6,11 +7,10 @@ from src.core.config import PRIVATE_KEY, PUBLIC_KEY, ALGORITHM, ACCESS_TOKEN_LIF
 from src.exceptions.auth import InvalidTokenException
 from src.core.logger import logger
 from src.core.config import redis_client
-import uuid
-
+from src.models.user import User
 
 def create_token(
-    user_id: int, org_id: int, token_type: str, expires_delta: Optional[timedelta] = None
+    user: User, token_type: str, expires_delta: Optional[timedelta] = None
 ) -> str:
     """Создает JWT токен (access или refresh)"""
     expire = datetime.now(UTC) + (
@@ -21,23 +21,24 @@ def create_token(
 
     payload = {
         "jti": str(uuid.uuid4()),
-        "sub": str(user_id),
+        "sub": str(user.id),
         "type": token_type,
         "exp": expire,
-        "org_id": org_id
+        "org_id": user.org_id,
+        "role": user.role.value
     }
 
     return jwt.encode(payload, PRIVATE_KEY, algorithm=ALGORITHM) # pyright: ignore[reportArgumentType]
 
-def create_access_token(user_id: int, org_id, expires_delta: timedelta = None) -> str:
+def create_access_token(user: User, expires_delta: timedelta = None) -> str:
     access_token = create_token(
-        user_id, org_id, expires_delta=expires_delta, token_type="access"
+        user, expires_delta=expires_delta, token_type="access"
     )
     return access_token
 
-def create_refresh_token(user_id: int, org_id, expires_delta: timedelta = None) -> str:
+def create_refresh_token(user: User, expires_delta: timedelta = None) -> str:
     refresh_token = create_token(
-        user_id, org_id, expires_delta=expires_delta, token_type="refresh"
+        user, expires_delta=expires_delta, token_type="refresh"
     )
     return refresh_token
 
@@ -48,17 +49,17 @@ def verify_token(token: str) -> Optional[dict]:
         )
         return payload
     except JWTError:
-        return None
+        raise InvalidTokenException
 
 def verify_access_token(token: str)  -> Optional[dict]:
     payload = verify_token(token)
-    if not payload or payload.get("type") != "access":
+    if payload.get("type") != "access":
         raise InvalidTokenException
     return payload
 
 def verify_refresh_token(token: str) -> Optional[dict]:
     payload = verify_token(token)
-    if not payload or payload.get("type") != "refresh":
+    if payload.get("type") != "refresh":
         raise InvalidTokenException
     return payload
 

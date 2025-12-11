@@ -8,6 +8,8 @@ ALGORITHM = "RS256"
 REDIS_HOST_ADRESS = "redis" 
 REDIS_PORT = "6379"
 REDIS_DB = "0"
-PRIVATE_KEY_PATH=private.pem
-PUBLIC_KEY_PATH=public.pem
-
+PRIVATE_KEY_PATH=/app/keys/private.pem
+PUBLIC_KEY_PATH=/app/keys/public.pem
+ADMIN_USERNAME = 
+ADMIN_EMAIL = 
+ADMIN_PASSWORD = 

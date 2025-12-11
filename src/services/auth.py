@@ -20,15 +20,15 @@ class AuthService:
         if not self.hasher.verify(data.password, user.password):
             raise InvalidUserCredentials
 
-        access_token = create_access_token(user_id=user.id, org_id=user.org_id)
-        refresh_token = create_refresh_token(user_id=user.id, org_id=user.org_id)
+        access_token = create_access_token(user)
+        refresh_token = create_refresh_token(user)
         return access_token, refresh_token
 
     async def get_new_access_token(self, refresh_token: str) -> str | None :
         payload = verify_refresh_token(refresh_token)
         await self.get_jti_or_exception(payload)
         user = await self.get_user_or_exception(payload)
-        access_token = create_access_token(user_id=user.id, org_id=user.org_id)
+        access_token = create_access_token(user)
         return access_token 
 
     async def get_user_data(self, access_token: str) -> User: 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
+from src.enums import UserRole
 
 class UserCreate(BaseModel):
     username: str
@@ -15,6 +16,7 @@ class UserRead(BaseModel):
     username: str
     email: Optional[EmailStr]
     org_id: Optional[int]
+    role: UserRole = UserRole.USER
 
 
 class UserInDB(UserRead):

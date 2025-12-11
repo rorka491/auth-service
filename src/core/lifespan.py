@@ -1,25 +1,26 @@
-# from fastapi import FastAPI
-# from contextlib import asynccontextmanager
-# from fastapi_admin.providers.login import UsernamePasswordProvider
-# from src.core.db import TORTOISE_ORM
-# from src.admin.admin_app import admin_app
-# from src.core.logger import logger
-# from redis.asyncio import Redis
-# from src.models.admin import Admin as AdminModel
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from passlib.hash import bcrypt
+from src.models import User
+from tortoise.exceptions import DoesNotExist
+import os
+from src.core.config import ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_USERNAME
+from src.core.config import hasher 
+from src.enums import UserRole
 
-# redis = Redis(host="localhost", port=6379, db=0)
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     await admin_app.configure(
-#         redis=redis,
-#         providers=[
-#             UsernamePasswordProvider(
-#                 admin_model=AdminModel,
-#             )
-#         ],
-#     )
-#     logger.info('Admin app init')
-#     yield
-#     await redis.close()
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    try:
+        await User.get(username=ADMIN_USERNAME)
+    except DoesNotExist:
+        await User.create(
+            username=ADMIN_USERNAME,
+            email=ADMIN_EMAIL,
+            password=hasher.hash(ADMIN_PASSWORD),
+            role=UserRole.ADMIN.value
+        )
+        print("Admin created")
+    
+    yield  

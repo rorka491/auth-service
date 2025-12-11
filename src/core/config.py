@@ -27,6 +27,9 @@ REDIS_PORT = int(os.getenv("REDIS_PORT"))
 REDIS_DB = int(os.getenv("REDIS_DB"))
 PRIVATE_KEY = Path(os.getenv("PRIVATE_KEY_PATH")).read_text()
 PUBLIC_KEY = Path(os.getenv("PUBLIC_KEY_PATH")).read_text()
-
+PUBLIC_KEY_PATH = Path(os.getenv("PUBLIC_KEY_PATH"))
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "12345") 
 
 redis_client = Redis(host=REDIS_HOST_ADRESS, port=REDIS_PORT, db=REDIS_DB)
