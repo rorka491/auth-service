@@ -14,7 +14,7 @@ class UserRead(BaseModel):
 
     id: int
     username: str
-    email: Optional[EmailStr]
+    email: Optional[str] = None
     org_id: Optional[int]
     role: UserRole = UserRole.USER
 
